@@ -111,12 +111,9 @@ func (v *Vox) PrintProperty(name, value string) {
 }
 
 // PrintResult - Prints a name and a result message. If an error is passed it
-// will result in a failure message ex:
-// Item Description                     [FAIL]
-// If nil is passed as the second argument it will result in a success
-// output:
-// Item Description                     [OK]
-// The status code will also be right aligned.
+// will result in a failure message ex. If nil is passed as the second argument
+// it will result in a success. The status code will also be right aligned and
+// color coded based on the result.
 func PrintResult(desc string, err error) { v.PrintResult(desc, err) }
 func (v *Vox) PrintResult(desc string, err error) {
 	resultColor := Red
@@ -128,4 +125,52 @@ func (v *Vox) PrintResult(desc string, err error) {
 	desc += strings.Repeat(" ", 60-len(desc))
 	Println(White, desc, Yellow, "[", resultColor, resultText, Yellow, "]",
 		ResetColor)
+}
+
+// Errorf - Print error output. Console output is colored red.
+func Errorf(format string, args ...interface{}) { v.Errorf(format, args...) }
+func (v *Vox) Errorf(format string, args ...interface{}) {
+	v.Error(fmt.Sprintf(format, args...))
+}
+
+// Error - Print output as an error. Console output is colored red.
+func Error(args ...interface{}) { v.Error(args...) }
+func (v *Vox) Error(args ...interface{}) {
+	v.Printlnc(Red, fmt.Sprint(args...))
+}
+
+// Info - Print an info output. Console output is colored white.
+func Infof(format string, args ...interface{}) { v.Infof(format, args...) }
+func (v *Vox) Infof(format string, args ...interface{}) {
+	v.Info(fmt.Sprintf(format, args...))
+}
+
+// Error - Print output as an error. Console output is colored white.
+func Info(args ...interface{}) { v.Info(args...) }
+func (v *Vox) Info(args ...interface{}) {
+	v.Printlnc(White, fmt.Sprint(args...))
+}
+
+// Alert - Print an info output. Console output is colored yellow.
+func Alertf(format string, args ...interface{}) { v.Alertf(format, args...) }
+func (v *Vox) Alertf(format string, args ...interface{}) {
+	v.Alertf(fmt.Sprintf(format, args...))
+}
+
+// Error - Print output as an error. Console output is colored white.
+func Alert(args ...interface{}) { v.Alert(args...) }
+func (v *Vox) Alert(args ...interface{}) {
+	v.Printlnc(Yellow, fmt.Sprint(args...))
+}
+
+// Debug - Print an debug output. Debug output is not colored.
+func Debugf(format string, args ...interface{}) { v.Debugf(format, args...) }
+func (v *Vox) Debugf(format string, args ...interface{}) {
+	v.Debug(fmt.Sprintf(format, args...))
+}
+
+// Debug - Print an debug output. Debug output is not colored.
+func Debug(args ...interface{}) { v.Debug(args...) }
+func (v *Vox) Debug(args ...interface{}) {
+	v.Println(fmt.Sprint(args...))
 }
