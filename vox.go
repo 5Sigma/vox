@@ -145,7 +145,7 @@ func (v *Vox) Infof(format string, args ...interface{}) {
 	v.Info(fmt.Sprintf(format, args...))
 }
 
-// Error - Print output as an error. Console output is colored white.
+// Info - Print an info output. Console output is colored white.
 func Info(args ...interface{}) { v.Info(args...) }
 func (v *Vox) Info(args ...interface{}) {
 	v.Printlnc(White, fmt.Sprint(args...))
@@ -157,7 +157,7 @@ func (v *Vox) Alertf(format string, args ...interface{}) {
 	v.Alertf(fmt.Sprintf(format, args...))
 }
 
-// Error - Print output as an error. Console output is colored white.
+// Alert - Print an info output. Console output is colored yellow.
 func Alert(args ...interface{}) { v.Alert(args...) }
 func (v *Vox) Alert(args ...interface{}) {
 	v.Printlnc(Yellow, fmt.Sprint(args...))
