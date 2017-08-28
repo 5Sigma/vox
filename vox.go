@@ -13,7 +13,7 @@ type Vox struct {
 	out      io.Writer
 	mu       sync.Mutex
 	buf      []byte
-	in       io.Reader
+	in       *os.File
 	progress *progress
 }
 
@@ -46,6 +46,13 @@ func (v *Vox) SetOutput(w io.Writer) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 	v.out = w
+}
+
+func SetInput(in *os.File) { v.SetInput(in) }
+func (v *Vox) SetInput(in *os.File) {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	v.in = in
 }
 
 // Output - Prints a string to the output stream.
@@ -90,7 +97,6 @@ func (v *Vox) Prompt(name, defaultValue string) string {
 	Printf("%s%s [%s]: %s", Yellow, name, defaultValue, ResetColor)
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSpace(input)
-	println(input)
 	if input == "" {
 		return defaultValue
 	}
@@ -103,10 +109,10 @@ func PrintProperty(name, value string) { v.PrintProperty(name, value) }
 func (v *Vox) PrintProperty(name, value string) {
 	totalLength := len(name) + len(value)
 	if totalLength > 60 {
-		Println(Yellow, name, "\n", White, value, ResetColor)
+		v.Println(Yellow, name, "\n", White, value, ResetColor)
 	} else {
 		spaces := strings.Repeat(" ", 60-totalLength)
-		Println(Yellow, name, spaces, White, value, ResetColor)
+		v.Println(Yellow, name, spaces, White, value, ResetColor)
 	}
 }
 
@@ -123,7 +129,7 @@ func (v *Vox) PrintResult(desc string, err error) {
 		resultText = "OK"
 	}
 	desc += strings.Repeat(" ", 60-len(desc))
-	Println(White, desc, Yellow, "[", resultColor, resultText, Yellow, "]",
+	v.Println(White, desc, Yellow, "[", resultColor, resultText, Yellow, "]",
 		ResetColor)
 }
 
@@ -173,4 +179,17 @@ func (v *Vox) Debugf(format string, args ...interface{}) {
 func Debug(args ...interface{}) { v.Debug(args...) }
 func (v *Vox) Debug(args ...interface{}) {
 	v.Println(fmt.Sprint(args...))
+}
+
+// Fatal - Prints an error message and then exits the application.
+func Fatal(args ...interface{}) { v.Fatal(args...) }
+func (v *Vox) Fatal(args ...interface{}) {
+	v.Error(args...)
+	os.Exit(-1)
+}
+
+// Fatalf - Prints an error message and then exits the application.
+func Fatalf(format string, args ...interface{}) { v.Fatalf(format, args...) }
+func (v *Vox) Fatalf(format string, args ...interface{}) {
+	v.Fatal(fmt.Sprintf(format, args...))
 }
