@@ -76,9 +76,10 @@ func Print(s ...interface{})          { v.Print(s...) }
 func (v *Vox) Print(s ...interface{}) { v.Output(fmt.Sprint(s...)) }
 
 // Println - Prints a number of tokens ending with a new line.
-func Println(s ...interface{}) { v.Print(s...) }
+func Println(s ...interface{}) { v.Println(s...) }
 func (v *Vox) Println(s ...interface{}) {
-	v.Output(fmt.Sprint(append(s, "\n")...))
+	str := fmt.Sprint(s...) + "\n"
+	v.Output(str)
 }
 
 // Printlnc - Prints a number of tokens followed by a new line. This output is
@@ -131,6 +132,9 @@ func (v *Vox) PrintResult(desc string, err error) {
 	desc += strings.Repeat(" ", 60-len(desc))
 	v.Println(White, desc, Yellow, "[", resultColor, resultText, Yellow, "]",
 		ResetColor)
+	if err != nil {
+		v.Printlnc(Red, err.Error())
+	}
 }
 
 // Errorf - Print error output. Console output is colored red.
