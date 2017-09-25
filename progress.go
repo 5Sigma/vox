@@ -26,6 +26,7 @@ func (v *Vox) StartProgress(current, max int) {
 		StartTime: time.Now(),
 	}
 	v.progress.Writer.Out = v.out
+	v.progress.Writer.Start()
 }
 
 // IncProgress - Increment the current progress value by name. If the new

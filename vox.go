@@ -95,10 +95,14 @@ func (v *Vox) Printlnc(c Color, s ...interface{}) {
 func Prompt(name, defaultVal string) string { return v.Prompt(name, defaultVal) }
 func (v *Vox) Prompt(name, defaultValue string) string {
 	reader := bufio.NewReader(v.in)
-	Printf("%s%s [%s]: %s", Yellow, name, defaultValue, ResetColor)
+	if defaultValue != "" {
+		Printf("%s%s [%s]: %s", Yellow, name, defaultValue, ResetColor)
+	} else {
+		Printf("%s%s : %s", Yellow, name, ResetColor)
+	}
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSpace(input)
-	if input == "" {
+	if input == "" && defaultValue != "" {
 		return defaultValue
 	}
 	return input
