@@ -143,6 +143,8 @@ func (v *Vox) PrintResult(desc string, err error) {
 
 // Errorf - Print error output. Console output is colored red.
 func Errorf(format string, args ...interface{}) { v.Errorf(format, args...) }
+
+// Errorf - Print error output. Console output is colored red.
 func (v *Vox) Errorf(format string, args ...interface{}) {
 	v.Error(fmt.Sprintf(format, args...))
 }
