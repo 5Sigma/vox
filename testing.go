@@ -38,6 +38,18 @@ func (v *Vox) GetOutput() string {
 // SendInput - Writes data into the input stream. Used for testing.
 func SendInput(str string) error { return v.SendInput(str) }
 
+// ClearInput - Clears the input buffer. Useful during testing.
+func ClearInput() {
+	in, _ := ioutil.TempFile("", "")
+	v.SetInput(in)
+}
+
+// ClearOutput - Clears the ouput buffer. Useful during testing.
+func ClearOutput() {
+	out := new(bytes.Buffer)
+	v.SetOutput(out)
+}
+
 // SendInput - Writes data into the input stream. Used for testing.
 func (v *Vox) SendInput(str string) error {
 	_, err := io.WriteString(v.in, str)
