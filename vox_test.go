@@ -1,32 +1,21 @@
 package vox
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
 )
 
-var out = new(bytes.Buffer)
-var in *os.File
-
 func TestMain(m *testing.M) {
-	var err error
-	in, err = ioutil.TempFile("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-	SetOutput(out)
-	SetInput(in)
+	Test()
 	res := m.Run()
 	os.Exit(res)
 }
 
 func TestOutput(t *testing.T) {
 	Output("test")
-	res, _ := out.ReadString('\n')
+	res := GetOutput()
 	if res != "test" {
 		t.Errorf("Result not correct: %s", res)
 	}
@@ -34,7 +23,7 @@ func TestOutput(t *testing.T) {
 
 func TestPrint(t *testing.T) {
 	Print("OUTPUT HERE")
-	res, _ := out.ReadString('\n')
+	res := GetOutput()
 	if res != "OUTPUT HERE" {
 		t.Errorf("Result not correct: %s", res)
 	}
@@ -42,7 +31,7 @@ func TestPrint(t *testing.T) {
 
 func TestPrintln(t *testing.T) {
 	Println("OUTPUT HERE")
-	res, _ := out.ReadString('\n')
+	res := GetOutput()
 	if res != "OUTPUT HERE\n" {
 		t.Errorf("Result not correct: %s", res)
 	}
@@ -50,7 +39,7 @@ func TestPrintln(t *testing.T) {
 
 func TestPrintProperty(t *testing.T) {
 	PrintProperty("Testing", "Run test")
-	res, _ := out.ReadString('\n')
+	res := GetOutput()
 	numSpaces := 60 - (len("Testing") + len("Run test"))
 	expected := fmt.Sprint(Yellow, "Testing",
 		strings.Repeat(" ", numSpaces), White,
@@ -72,7 +61,7 @@ func TestSprintc(t *testing.T) {
 func TestPrintResult(t *testing.T) {
 	desc := "test"
 	PrintResult(desc, nil)
-	res, _ := out.ReadString('\n')
+	res := GetOutput()
 	desc += strings.Repeat(" ", 60-len(desc))
 	expected := fmt.Sprint(
 		White, desc,
