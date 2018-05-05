@@ -10,6 +10,9 @@ import (
 // PrintJSON - Prints a byte array contianing JSON content. This output will be
 // color coded and syntax highlighted. It is also reformatted with indentation.
 func PrintJSON(contentBytes []byte) { v.PrintJSON(contentBytes) }
+
+// PrintJSON - Prints a byte array contianing JSON content. This output will be
+// color coded and syntax highlighted. It is also reformatted with indentation.
 func (v *Vox) PrintJSON(contentBytes []byte) {
 	var (
 		out     bytes.Buffer

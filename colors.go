@@ -4,6 +4,9 @@ import (
 	"fmt"
 )
 
+// Color - A structure which represents a single color. This structure should
+// not need to be used directly. Variables for each color are exported in the
+// package.
 type Color struct {
 	index int
 }

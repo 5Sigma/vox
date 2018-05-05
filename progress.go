@@ -19,6 +19,8 @@ type progress struct {
 
 // StartProgress - Start outputing a progressbar.
 func StartProgress(current, max int) { v.StartProgress(current, max) }
+
+// StartProgress - Start outputing a progressbar.
 func (v *Vox) StartProgress(current, max int) {
 	v.progress = &progress{
 		Writer:    uilive.New(),
@@ -35,6 +37,10 @@ func (v *Vox) StartProgress(current, max int) {
 // Current value is equal to the Max value StopProgress will be called
 // automatically.
 func IncProgress() { v.IncProgress() }
+
+// IncProgress - Increment the current progress value by name. If the new
+// Current value is equal to the Max value StopProgress will be called
+// automatically.
 func (v *Vox) IncProgress() {
 	v.progress.Current++
 	if v.progress.Current == v.progress.Max {
@@ -45,6 +51,8 @@ func (v *Vox) IncProgress() {
 
 // SetProgress - Sets the current progress value.
 func SetProgress(current int) { v.SetProgress(current) }
+
+// SetProgress - Sets the current progress value.
 func (v *Vox) SetProgress(current int) {
 	v.progress.Current = current
 	v.writeProgress()
@@ -64,6 +72,10 @@ func (v *Vox) writeProgress() {
 // This is called automatically if the Current value equals, or exceeds, the
 // maximum value.
 func StopProgress() { v.StopProgress() }
+
+// StopProgress - Stops outputing a progress bar and closes associated writers.
+// This is called automatically if the Current value equals, or exceeds, the
+// maximum value.
 func (v *Vox) StopProgress() {
 	v.progress.Writer.Stop()
 }
