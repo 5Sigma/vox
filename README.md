@@ -47,6 +47,13 @@ The following color constants exist, along with a *ResetColor* constant:
 - Cyan
 - White
 
+## Loglevel functions
+
+The loglevel functions print standard types of messages
+(debug, error, alert, info) colored and formatted. See the
+package documentation for their definitions.
+
+
 ## Printing results
 Prints a key and a result string depending on if the error value is nil.
 
@@ -68,6 +75,7 @@ vox.PrintResult("Name", user.Name)
 vox.PrintResult("Email", user.Email)
 ```
 
+
 ```
 Key:                                   some value
 Key:                                   some value
@@ -77,8 +85,28 @@ Key:                                   some value
 
 ## Prompting for input
 
-### Basic prompt
+Prompting for a basic string response from the user:
 
+```go
+result := vox.Prompt("Enter a response", "none")
+vox.Println("You entered ", result)
+```
+
+Prompting for a boolean response:
+
+```go
+result := vox.PromptBool("Are you sure", false)
+if !result {
+  return
+}
+```
+
+Prompting for a choice of options:
+
+```go
+choices := []string{"Option 1", "Option 2", "Option 3"}
+resultIndex := vox.PromptChoice("Choose an option", choices, 0)
+```
 
 ## Displaying progress
 
@@ -95,14 +123,43 @@ for _, t := range myTasks {
   }
   vox.IncProgress()
 }
+vox.StopProgress()
 ```
 
-## Other helper functions
+
+# Testing
+
+The output and input from for vox can be redirected to memory to make it easy to test the input and output for CLI applications. To reroute the library simply call the `Test` function.
+
+```go
+vox.Test()
+```
+
+Now data will be read/written to in memory stores instead of STDIN/STDOUT.  You can use `GetOutput` to get the current output in the buffer. To send user input for functions like `Prompt` you can use the `SendInput` function. NOTE: SendInput must be called before any prompt function, so that the data is ready in the buffer when `Prompt` is called.
+
+Vox also provides an `AssertOutput` helper for tests that checks the current output against the passed string. It calls testing.Error if it does not match.
 
 
+## An example test
 
-## Loglevel functions
+```go
+func AskForFile() string {
+  return vox.Prompt("Enter a file", "") 
+}
 
-The loglevel functions print standard types of messages
-(debug, error, alert, info) colored and formatted. See the
-package documentation for their definitions.
+
+func TestReadConfig(t *testing.T) {
+  vox.Test()
+  
+  err := checkFile()
+  vox.AssertOutput(t, vox.Red, "No config file found.")
+  SetupFile("test.txt") // Builds a config file
+  SendInput("test.txt")
+  AskForFile() // Asks user for a file path  
+  err = checkFile()
+  if err != nil {
+    t.Errorf("Could not load config file: %s", err.Error())
+  }
+  AssertOutput(t, "Config file read")
+}
+```
