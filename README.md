@@ -1,5 +1,9 @@
 [![GoDoc](https://godoc.org/github.com/5Sigma/vox?status.svg)](https://godoc.org/github.com/5Sigma/vox)
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/5sigma/vox)](https://goreportcard.com/report/github.com/5sigma/vox)
+
+[![Build Status](https://travis-ci.org/5Sigma/vox.svg?branch=master)](https://travis-ci.org/5Sigma/vox)
+
 Vox is a Go package designed to help make terminal/console applications more
 attractive.
 
