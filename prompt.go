@@ -2,6 +2,8 @@ package vox
 
 import (
 	"bufio"
+	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -55,4 +57,30 @@ func (v *Vox) PromptBool(message string, defaultVal bool) bool {
 	}
 
 	return retValue
+}
+
+// PromptChoice - Prompts for a choice of a series of options from the user.
+func PromptChoice(msg string, choices []string, defaultIdx int) string {
+	return v.PromptChoice(msg, choices, defaultIdx)
+}
+
+// PromptChoice - Prompts for a choice of a series of options from the user.
+func (v *Vox) PromptChoice(msg string, choices []string, defIdx int) string {
+	output := []string{"Choose an option:"}
+	for idx, c := range choices {
+		output = append(output, fmt.Sprintf("%d. %s", idx+1, c))
+	}
+	Printf(strings.Join(output, "\n"))
+	Print(Yellow, "[", choices[defIdx], "] ", ResetColor)
+	reader := bufio.NewReader(v.in)
+	input, _ := reader.ReadString('\n')
+	choice, err := strconv.Atoi(input)
+	println(choice)
+	if err != nil {
+		return choices[defIdx]
+	}
+	if choice < len(choices) {
+		return choices[choice-1]
+	}
+	return choices[defIdx]
 }
