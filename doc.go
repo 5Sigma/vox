@@ -34,6 +34,7 @@ There are several helper functions for gathering input from the console.
         choiceIndex := vox.PromptChoice("A message", choices, 1)
 
 Testing
+
 The output and input from for vox can be redirected to memory to make it easy to test 
 the input and output for CLI applications. To reroute the library simply call the 
 Test function.
