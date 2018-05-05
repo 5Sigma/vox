@@ -186,7 +186,7 @@ func Alertf(format string, args ...interface{}) { v.Alertf(format, args...) }
 
 // Alertf - Print an info output. Console output is colored yellow.
 func (v *Vox) Alertf(format string, args ...interface{}) {
-	v.Alertf(fmt.Sprintf(format, args...))
+	v.Alert(fmt.Sprintf(format, args...))
 }
 
 // Alert - Print an info output. Console output is colored yellow.

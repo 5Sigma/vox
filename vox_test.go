@@ -1,6 +1,7 @@
 package vox
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -60,15 +61,79 @@ func TestSprintc(t *testing.T) {
 
 func TestPrintResult(t *testing.T) {
 	desc := "test"
-	PrintResult(desc, nil)
-	res := GetOutput()
 	desc += strings.Repeat(" ", 60-len(desc))
-	expected := fmt.Sprint(
+	PrintResult(desc, nil)
+	AssertOutput(t,
 		White, desc,
+		Yellow, "[", Green, "OK", Yellow, "]",
+		ResetColor, "\n",
+	)
+	ClearOutput()
+	PrintResult(desc, errors.New("test error"))
+	AssertOutput(t,
+		White,
+		desc,
 		Yellow, "[",
-		Green, "OK",
-		Yellow, "]", ResetColor, "\n")
-	if res != expected {
-		t.Errorf("Result not correct: %s\n Expected: %s", res, expected)
-	}
+		Red, "FAIL",
+		Yellow, "]", ResetColor, "\n",
+	)
+	ClearOutput()
+}
+
+func TestErrorf(t *testing.T) {
+	ClearOutput()
+	Errorf("test error")
+	AssertOutput(t, Red, "test error", ResetColor, "\n")
+	ClearOutput()
+
+}
+
+func TestInfof(t *testing.T) {
+	ClearOutput()
+	Infof("test info")
+	AssertOutput(t, White, "test info", ResetColor, "\n")
+	ClearOutput()
+}
+
+func TestAlertf(t *testing.T) {
+	ClearOutput()
+	Alertf("test alert")
+	AssertOutput(t, Yellow, "test alert", ResetColor, "\n")
+	ClearOutput()
+}
+
+func TestDebugf(t *testing.T) {
+	ClearOutput()
+	Debugf("test debug")
+	AssertOutput(t, "test debug", "\n")
+	ClearOutput()
+}
+
+func TestError(t *testing.T) {
+	ClearOutput()
+	Error("test error")
+	AssertOutput(t, Red, "test error", ResetColor, "\n")
+	ClearOutput()
+
+}
+
+func TestInfo(t *testing.T) {
+	ClearOutput()
+	Info("test info")
+	AssertOutput(t, White, "test info", ResetColor, "\n")
+	ClearOutput()
+}
+
+func TestAlert(t *testing.T) {
+	ClearOutput()
+	Alert("test alert")
+	AssertOutput(t, Yellow, "test alert", ResetColor, "\n")
+	ClearOutput()
+}
+
+func TestDebug(t *testing.T) {
+	ClearOutput()
+	Debug("test debug")
+	AssertOutput(t, "test debug", "\n")
+	ClearOutput()
 }

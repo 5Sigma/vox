@@ -2,6 +2,7 @@ package vox
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -62,8 +63,9 @@ func (v *Vox) SendInput(str string) error {
 
 // AssertOutput - Checks the output for a given string and throws a testing
 // error if it does not match.
-func AssertOutput(t *testing.T, str string) {
+func AssertOutput(t *testing.T, args ...interface{}) {
 	res := GetOutput()
+	str := fmt.Sprint(args...)
 	if res != str {
 		t.Errorf("Expected: '%s'\nRecieved: '%s'", str, res)
 	}

@@ -75,7 +75,6 @@ func (v *Vox) PromptChoice(msg string, choices []string, defIdx int) string {
 	reader := bufio.NewReader(v.in)
 	input, _ := reader.ReadString('\n')
 	choice, err := strconv.Atoi(input)
-	println(choice)
 	if err != nil {
 		return choices[defIdx]
 	}
