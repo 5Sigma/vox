@@ -3,7 +3,6 @@ package vox
 import (
 	"bytes"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
@@ -20,19 +19,25 @@ func TestMain(m *testing.M) {
 func TestOutput(t *testing.T) {
 	Output("test")
 	res, _ := out.ReadString('\n')
-	assert.Equal(t, "test", res)
+	if res != "test" {
+		t.Errorf("incorrect string: %s", res)
+	}
 }
 
 func TestPrint(t *testing.T) {
 	Print("OUTPUT HERE")
 	res, _ := out.ReadString('\n')
-	assert.Equal(t, "OUTPUT HERE", res)
+	if res != "OUTPUT HERE" {
+		t.Errorf("incorrect string: %s", res)
+	}
 }
 
 func TestPrintln(t *testing.T) {
 	Println("OUTPUT HERE")
 	res, _ := out.ReadString('\n')
-	assert.Equal(t, "OUTPUT HERE", res)
+	if res != "OUTPUT HERE\n" {
+		t.Errorf("incorrect string: %s", res)
+	}
 }
 
 func TestPrintProperty(t *testing.T) {
@@ -41,14 +46,18 @@ func TestPrintProperty(t *testing.T) {
 	numSpaces := 60 - (len("Testing") + len("Run test"))
 	expected := fmt.Sprint(Yellow, "Testing",
 		strings.Repeat(" ", numSpaces), White,
-		"Run test", ResetColor)
-	assert.Equal(t, expected, res)
+		"Run test", ResetColor, "\n")
+	if res != expected {
+		t.Errorf("incorrect string: \n%s%s", res, expected)
+	}
 }
 
 func TestSprintc(t *testing.T) {
 	res := Sprintc(Red, "red")
 	expected := fmt.Sprint(Red, "red", ResetColor)
-	assert.Equal(t, expected, res)
+	if res != expected {
+		t.Errorf("incorrect string: \n%sn%s", res, expected)
+	}
 }
 
 func TestPrintResult(t *testing.T) {
@@ -60,6 +69,8 @@ func TestPrintResult(t *testing.T) {
 		White, desc,
 		Yellow, "[",
 		Green, "OK",
-		Yellow, "]", ResetColor)
-	assert.Equal(t, expected, res)
+		Yellow, "]", ResetColor, "\n")
+	if res != expected {
+		t.Errorf("incorrect string: \n%s%s", res, expected)
+	}
 }

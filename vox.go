@@ -33,6 +33,11 @@ func New() *Vox {
 	return v
 }
 
+// Write writes data into the log
+func (v *Vox) Write(p []byte) (n int, err error) {
+	return v.out.Write(p)
+}
+
 // Sprintc - Creates a string in a given color. The color code prepends the
 // string and a reset code is appended to it.
 func Sprintc(c Color, args ...interface{}) string {
