@@ -3,8 +3,6 @@ package vox
 import (
 	"io"
 	"os"
-
-	"github.com/5Sigma/vox"
 )
 
 // PipelineConfig is the configuration for a pipeline
@@ -96,6 +94,11 @@ func (t *TestPipeline) Last() string {
 	return t.LogLines[len(t.LogLines)-1]
 }
 
+// Clear removes all items in the pipelines buffer
+func (t *TestPipeline) Clear() {
+	t.LogLines = []string{}
+}
+
 // WriterPipeline implements a generic pipeline powered by an io.Writer stream
 type WriterPipeline struct {
 	Writer io.Writer
@@ -104,13 +107,13 @@ type WriterPipeline struct {
 
 // Config returns a configuration for the pipeline. Plain is specified on the
 // pipeline itself and patched into the configuration.
-func (w *WriterPipeline) Config() *vox.PipelineConfig {
+func (w *WriterPipeline) Config() *PipelineConfig {
 	return &PipelineConfig{Plain: w.Plain}
 }
 
 // Write sends data into the specified writer.
-func (w *WriterPipeline) Write(w []byte) (int, error) {
-	return w.Writer.write(b)
+func (w *WriterPipeline) Write(b []byte) (int, error) {
+	return w.Writer.Write(b)
 }
 
 // Initialize has no logic in a WriterPipeline

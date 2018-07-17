@@ -1,6 +1,7 @@
 package vox
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -49,15 +50,30 @@ func TestSprintc(t *testing.T) {
 }
 
 func TestPrintResult(t *testing.T) {
-	desc := "test"
-	PrintResult(desc, nil)
-	desc += strings.Repeat(" ", 60-len(desc))
-	expected := fmt.Sprint(
-		White, desc,
-		Yellow, "[",
-		Green, "OK",
-		Yellow, "]", ResetColor, "\n")
-	if pipeline.Last() != expected {
-		t.Errorf("incorrect string: \n%s%s", pipeline.Last(), expected)
-	}
+	t.Run("without error", func(t *testing.T) {
+		pipeline.Clear()
+		desc := "test"
+		PrintResult(desc, nil)
+		expected := fmt.Sprint(
+			White, desc, strings.Repeat(" ", 60-len(desc)),
+			Yellow, "[", Green, "OK", Yellow, "]",
+			ResetColor, "\n",
+		)
+		if pipeline.Last() != expected {
+			t.Errorf("incorrect string: \n%s%s", pipeline.Last(), expected)
+		}
+	})
+	t.Run("with error", func(t *testing.T) {
+		desc := "test"
+		PrintResult(desc, errors.New("test error"))
+		expected := fmt.Sprint(
+			White,
+			desc, strings.Repeat(" ", 60-len(desc)),
+			Yellow, "[",
+			Red, "FAIL",
+			Yellow, "]", ResetColor, "\n", Red, "test error\n")
+		if pipeline.Last() != expected {
+			t.Errorf("incorrect string: \n%s%s", pipeline.Last(), expected)
+		}
+	})
 }
