@@ -6,7 +6,12 @@ import (
 )
 
 // PipelineConfig is the configuration for a pipeline
+// The pipeline config should be returned from the Config function for any
+// pipeline structure.
 type PipelineConfig struct {
+	// Plain - If set to true all color information and some formatting will be
+	// stripped from the output. This is normally used for outputs directed towards
+	// files.
 	Plain bool
 }
 

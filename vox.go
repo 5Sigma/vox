@@ -51,6 +51,7 @@ func Sprintc(c Color, args ...interface{}) string {
 
 // SetPipelines replaces all pipelines with the passed pipeline
 func (v *Vox) SetPipelines(p Pipeline) {
+	p.Initialize()
 	v.pipelines = []Pipeline{p}
 }
 
@@ -59,6 +60,7 @@ func SetPipelines(p Pipeline) { v.SetPipelines(p) }
 
 // AddPipeline adds a new pipeline to the logger
 func (v *Vox) AddPipeline(p Pipeline) {
+	p.Initialize()
 	v.pipelines = append(v.pipelines, p)
 }
 
