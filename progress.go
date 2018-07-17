@@ -2,9 +2,11 @@ package vox
 
 import (
 	"fmt"
-	"github.com/gosuri/uilive"
+	"os"
 	"strings"
 	"time"
+
+	"github.com/gosuri/uilive"
 )
 
 // ProgressBar - A structure that controls displaying a progress bar in the
@@ -25,7 +27,7 @@ func (v *Vox) StartProgress(current, max int) {
 		Current:   current,
 		StartTime: time.Now(),
 	}
-	v.progress.Writer.Out = v.out
+	v.progress.Writer.Out = os.Stdout
 	v.progress.Writer.Start()
 }
 

@@ -3,18 +3,18 @@ package vox
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"sync"
 )
 
+// Vox the vox logging object
 type Vox struct {
-	out      io.Writer
-	mu       sync.Mutex
-	buf      []byte
-	in       *os.File
-	progress *progress
+	mu        sync.Mutex
+	buf       []byte
+	in        *os.File
+	progress  *progress
+	pipelines []Pipeline
 }
 
 var v *Vox
@@ -26,16 +26,20 @@ func init() {
 // New - creates a new Vox instance. This can be used as an alternative to the
 // singletone instance. If multiple Vox instances are needed.
 func New() *Vox {
-	v := &Vox{
-		out: os.Stdout,
-		in:  os.Stdin,
-	}
+	v := &Vox{}
+	v.SetPipelines(&ConsolePipeline{})
 	return v
 }
 
 // Write writes data into the log
 func (v *Vox) Write(p []byte) (n int, err error) {
-	return v.out.Write(p)
+	for _, pl := range v.pipelines {
+		_, err := pl.Write(p)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return len(p), nil
 }
 
 // Sprintc - Creates a string in a given color. The color code prepends the
@@ -45,14 +49,19 @@ func Sprintc(c Color, args ...interface{}) string {
 	return fmt.Sprint(c, str, ResetColor)
 }
 
-// SetOutput - Sets the output for a print actions.  By default it is Stdout.
-func SetOutput(w io.Writer) { v.SetOutput(w) }
-func (v *Vox) SetOutput(w io.Writer) {
-	v.mu.Lock()
-	defer v.mu.Unlock()
-	v.out = w
+// SetPipelines replaces all pipelines with the passed pipeline
+func (v *Vox) SetPipelines(p Pipeline) {
+	v.pipelines = []Pipeline{p}
 }
+func SetPipelines(p Pipeline) { v.SetPipelines(p) }
 
+// AddPipeline adds a new pipeline to the logger
+func (v *Vox) AddPipeline(p Pipeline) {
+	v.pipelines = append(v.pipelines, p)
+}
+func AddPipeline(p Pipeline) { v.AddPipeline(p) }
+
+// SetInput sets the input stream this can be changed for testing inputs
 func SetInput(in *os.File) { v.SetInput(in) }
 func (v *Vox) SetInput(in *os.File) {
 	v.mu.Lock()
@@ -60,12 +69,39 @@ func (v *Vox) SetInput(in *os.File) {
 	v.in = in
 }
 
-// Output - Prints a string to the output stream.
-func Output(s string) error { return v.Output(s) }
-func (v *Vox) Output(s string) error {
-	v.buf = v.buf[:0]
-	v.buf = append(v.buf, s...)
-	v.out.Write(v.buf)
+func (v *Vox) output(s string) error {
+	for _, pl := range v.pipelines {
+
+		if pl.Config().Plain {
+			continue
+		}
+
+		v.buf = v.buf[:0]
+		v.buf = append(v.buf, s...)
+
+		pl.Write(v.buf)
+		_, err := pl.Write(v.buf)
+		if err != nil {
+			println(err.Error())
+		}
+	}
+	return nil
+}
+
+func (v *Vox) outputPlain(s string) error {
+	for _, pl := range v.pipelines {
+		if !pl.Config().Plain {
+			continue
+		}
+		v.buf = v.buf[:0]
+		v.buf = append(v.buf, s...)
+
+		pl.Write(v.buf)
+		_, err := pl.Write(v.buf)
+		if err != nil {
+			println(err.Error())
+		}
+	}
 	return nil
 }
 
@@ -73,18 +109,18 @@ func (v *Vox) Output(s string) error {
 // variables.
 func Printf(format string, s ...interface{}) { v.Printf(format, s...) }
 func (v *Vox) Printf(format string, s ...interface{}) {
-	v.Output(fmt.Sprintf(format, s...))
+	v.output(fmt.Sprintf(format, s...))
 }
 
 // Print - Prints a number of variables.
 func Print(s ...interface{})          { v.Print(s...) }
-func (v *Vox) Print(s ...interface{}) { v.Output(fmt.Sprint(s...)) }
+func (v *Vox) Print(s ...interface{}) { v.output(fmt.Sprint(s...)) }
 
 // Println - Prints a number of tokens ending with a new line.
 func Println(s ...interface{}) { v.Println(s...) }
 func (v *Vox) Println(s ...interface{}) {
 	str := fmt.Sprint(s...) + "\n"
-	v.Output(str)
+	v.output(str)
 }
 
 // Printlnc - Prints a number of tokens followed by a new line. This output is
@@ -92,7 +128,8 @@ func (v *Vox) Println(s ...interface{}) {
 func Printlnc(c Color, s ...interface{}) { v.Printlnc(c, s...) }
 func (v *Vox) Printlnc(c Color, s ...interface{}) {
 	outStr := fmt.Sprint(s...)
-	v.Println(c, outStr, ResetColor)
+	v.output(fmt.Sprint(c, outStr, ResetColor, "\n"))
+	v.outputPlain(outStr + "\n")
 }
 
 // Prompt - Gets input from the input stream. By default Stdin. If an empty
@@ -139,10 +176,15 @@ func (v *Vox) PrintResult(desc string, err error) {
 		resultText = "OK"
 	}
 	desc += strings.Repeat(" ", 60-len(desc))
-	v.Println(White, desc, Yellow, "[", resultColor, resultText, Yellow, "]",
-		ResetColor)
+	v.output(fmt.Sprint(White, desc, Yellow, "[", resultColor, resultText, Yellow, "]",
+		ResetColor, "\n"))
 	if err != nil {
 		v.Printlnc(Red, err.Error())
+	}
+
+	v.outputPlain(fmt.Sprintf("%s [%s]\n", desc, resultText))
+	if err != nil {
+		v.outputPlain(err.Error() + "\n")
 	}
 }
 
