@@ -3,7 +3,11 @@ package vox
 import (
 	"io"
 	"os"
+
+	"github.com/spf13/afero"
 )
+
+var fs = afero.NewOsFs()
 
 // PipelineConfig is the configuration for a pipeline
 // The pipeline config should be returned from the Config function for any
@@ -45,7 +49,12 @@ func (c *ConsolePipeline) Initialize() error {
 // FilePipeline sends output into a local file
 type FilePipeline struct {
 	Filepath string
-	file     *os.File
+	file     afero.File
+}
+
+//Close closes the file pointer
+func (f *FilePipeline) Close() {
+	f.file.Close()
 }
 
 // Config returns the pipline configuration
@@ -57,13 +66,17 @@ func (f *FilePipeline) Config() *PipelineConfig {
 
 // Write sends the data to the local filepath
 func (f *FilePipeline) Write(b []byte) (int, error) {
-	return f.file.Write(b)
+	num, err := f.file.Write(b)
+	if num > 0 {
+		f.file.Sync()
+	}
+	return num, err
 }
 
 // Initialize opens the local file for reading
 func (f *FilePipeline) Initialize() error {
 	var err error
-	f.file, err = os.Open(f.Filepath)
+	f.file, err = fs.OpenFile(f.Filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0700)
 	return err
 }
 

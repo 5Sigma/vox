@@ -51,8 +51,11 @@ func Sprintc(c Color, args ...interface{}) string {
 
 // SetPipelines replaces all pipelines with the passed pipeline
 func (v *Vox) SetPipelines(p Pipeline) {
-	p.Initialize()
-	v.pipelines = []Pipeline{p}
+	if err := p.Initialize(); err == nil {
+		v.pipelines = []Pipeline{p}
+	} else {
+		v.pipelines = []Pipeline{}
+	}
 }
 
 // SetPipelines replaces all pipelines with the passed pipeline
@@ -60,8 +63,9 @@ func SetPipelines(p Pipeline) { v.SetPipelines(p) }
 
 // AddPipeline adds a new pipeline to the logger
 func (v *Vox) AddPipeline(p Pipeline) {
-	p.Initialize()
-	v.pipelines = append(v.pipelines, p)
+	if err := p.Initialize(); err == nil {
+		v.pipelines = append(v.pipelines, p)
+	}
 }
 
 // AddPipeline adds a new pipeline to the logger
@@ -79,18 +83,15 @@ func (v *Vox) SetInput(in *os.File) {
 
 func (v *Vox) output(s string) error {
 	for _, pl := range v.pipelines {
+		if !pl.Config().Plain {
+			v.buf = v.buf[:0]
+			v.buf = append(v.buf, s...)
 
-		if pl.Config().Plain {
-			continue
-		}
-
-		v.buf = v.buf[:0]
-		v.buf = append(v.buf, s...)
-
-		pl.Write(v.buf)
-		_, err := pl.Write(v.buf)
-		if err != nil {
-			println(err.Error())
+			pl.Write(v.buf)
+			_, err := pl.Write(v.buf)
+			if err != nil {
+				println(err.Error())
+			}
 		}
 	}
 	return nil
@@ -98,16 +99,14 @@ func (v *Vox) output(s string) error {
 
 func (v *Vox) outputPlain(s string) error {
 	for _, pl := range v.pipelines {
-		if !pl.Config().Plain {
-			continue
-		}
-		v.buf = v.buf[:0]
-		v.buf = append(v.buf, s...)
+		if pl.Config().Plain {
+			v.buf = v.buf[:0]
+			v.buf = append(v.buf, s...)
 
-		pl.Write(v.buf)
-		_, err := pl.Write(v.buf)
-		if err != nil {
-			println(err.Error())
+			_, err := pl.Write(v.buf)
+			if err != nil {
+				println(err.Error())
+			}
 		}
 	}
 	return nil
@@ -127,7 +126,10 @@ func (v *Vox) Printf(format string, s ...interface{}) {
 func Print(s ...interface{}) { v.Print(s...) }
 
 // Print - Prints a number of variables.
-func (v *Vox) Print(s ...interface{}) { v.output(fmt.Sprint(s...)) }
+func (v *Vox) Print(s ...interface{}) {
+	v.output(fmt.Sprint(s...))
+	v.outputPlain(fmt.Sprint(s...))
+}
 
 // Println - Prints a number of tokens ending with a new line.
 func Println(s ...interface{}) { v.Println(s...) }
@@ -135,7 +137,7 @@ func Println(s ...interface{}) { v.Println(s...) }
 // Println - Prints a number of tokens ending with a new line.
 func (v *Vox) Println(s ...interface{}) {
 	str := fmt.Sprint(s...) + "\n"
-	v.output(str)
+	v.Print(str)
 }
 
 // Printlnc - Prints a number of tokens followed by a new line. This output is
