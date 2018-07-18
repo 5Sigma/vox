@@ -17,30 +17,29 @@ func (c Color) String() string {
 
 var (
 	// Back - Black terminal color constant. This can be used as a string inside any of the output functions
-	Black      = Color{0}
-	
+	Black = Color{0}
+
 	// Red - Red terminal color constant. This can be used as a string inside any of the output functions
-	Red        = Color{1}
-	
+	Red = Color{1}
+
 	// Green - Green terminal color constant. This can be used as a string inside any of the output functions
-	Green      = Color{2}
-	
+	Green = Color{2}
+
 	// Yellow - Yellow terminal color constant. This can be used as a string inside any of the output functions
-	Yellow     = Color{3}
-	
+	Yellow = Color{3}
+
 	// Blue - Blue terminal color constant. This can be used as a string inside any of the output functions
-	Blue       = Color{4}
-	
+	Blue = Color{4}
+
 	// Magenta - Magenta terminal color constant. This can be used as a string inside any of the output functions
-	Magenta    = Color{5}
-	
+	Magenta = Color{5}
+
 	// Cyan - Cyan terminal color constant. This can be used as a string inside any of the output functions
-	Cyan       = Color{6}
-	
+	Cyan = Color{6}
+
 	// White - White terminal color constant. This can be used as a string inside any of the output functions
-	White      = Color{7}
-	
+	White = Color{7}
+
 	// ResetColor - Resets the terminal back to its default color. This can be used as a string inside any of the output functions
 	ResetColor = Color{9}
-	
 )

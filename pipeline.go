@@ -3,6 +3,7 @@ package vox
 import (
 	"io"
 	"os"
+	"strings"
 
 	"github.com/spf13/afero"
 )
@@ -102,6 +103,11 @@ func (t *TestPipeline) Write(b []byte) (int, error) {
 func (t *TestPipeline) Initialize() error {
 	t.LogLines = []string{}
 	return nil
+}
+
+// All returns all output data
+func (t *TestPipeline) All() string {
+	return strings.Join(t.LogLines, "")
 }
 
 // Last returns the last section of data sent

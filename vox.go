@@ -87,7 +87,6 @@ func (v *Vox) output(s string) error {
 			v.buf = v.buf[:0]
 			v.buf = append(v.buf, s...)
 
-			pl.Write(v.buf)
 			_, err := pl.Write(v.buf)
 			if err != nil {
 				println(err.Error())
@@ -119,7 +118,7 @@ func Printf(format string, s ...interface{}) { v.Printf(format, s...) }
 // Printf - Prints a formatted string using a template and as series of
 // variables.
 func (v *Vox) Printf(format string, s ...interface{}) {
-	v.output(fmt.Sprintf(format, s...))
+	v.Print(fmt.Sprintf(format, s...))
 }
 
 // Print - Prints a number of variables.
@@ -129,6 +128,37 @@ func Print(s ...interface{}) { v.Print(s...) }
 func (v *Vox) Print(s ...interface{}) {
 	v.output(fmt.Sprint(s...))
 	v.outputPlain(fmt.Sprint(s...))
+}
+
+// Printc - sends the string results of the objects prefixed with a color code.
+// For plain pipelines the color code will be stripped out.
+func Printc(c Color, s ...interface{}) { v.Printc(c, s...) }
+
+// Printc - sends the string results of the objects prefixed with a color code.
+// For plain pipelines the color code will be stripped out.
+func (v *Vox) Printc(c Color, s ...interface{}) {
+	str := fmt.Sprint(s...)
+	v.output(fmt.Sprint(c, str, ResetColor))
+	v.outputPlain(fmt.Sprint(s...))
+}
+
+// PrintRich will only print to non plain pipelines. It is safe to embed color
+// codes in this function.
+func PrintRich(c Color, s ...interface{}) { v.PrintRich(s...) }
+
+// PrintRich will only print to non plain pipelines. It is safe to embed color
+// codes in this function.
+func (v *Vox) PrintRich(s ...interface{}) {
+	v.output(fmt.Sprint(s...))
+}
+
+// PrintPlain will only print to plain pipelines, such as the FilePipeline
+func PrintPlain(c Color, s ...interface{}) { v.PrintPlain(s...) }
+
+// PrintPlain will only print to non plain pipelines. It is safe to embed color
+// codes in this function.
+func (v *Vox) PrintPlain(s ...interface{}) {
+	v.output(fmt.Sprint(s...))
 }
 
 // Println - Prints a number of tokens ending with a new line.

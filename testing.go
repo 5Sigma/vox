@@ -7,10 +7,10 @@ import (
 )
 
 // Test - Sets up vox to print and read from in memory locations for testing.
-func Test() Pipeline { return v.Test() }
+func Test() *TestPipeline { return v.Test() }
 
 // Test - Sets up vox to print and read from in memory locations for testing.
-func (v *Vox) Test() Pipeline {
+func (v *Vox) Test() *TestPipeline {
 	pl := &TestPipeline{}
 	v.SetPipelines(pl)
 	return pl

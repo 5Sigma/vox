@@ -8,25 +8,27 @@ import (
 	"testing"
 )
 
-var pipeline = TestPipeline{}
+var pipeline *TestPipeline
 
 func TestMain(m *testing.M) {
-	SetPipelines(&pipeline)
+	pipeline = Test()
 	res := m.Run()
 	os.Exit(res)
 }
 
 func TestPrint(t *testing.T) {
+	pipeline.Clear()
 	Print("OUTPUT HERE")
-	if pipeline.Last() != "OUTPUT HERE" {
-		t.Errorf("incorrect string: %s", pipeline.Last())
+	if pipeline.All() != "OUTPUT HERE" {
+		t.Errorf("incorrect string: %s", pipeline.All())
 	}
 }
 
 func TestPrintln(t *testing.T) {
+	pipeline.Clear()
 	Println("OUTPUT HERE")
-	if pipeline.Last() != "OUTPUT HERE\n" {
-		t.Errorf("incorrect string: %s", pipeline.Last())
+	if pipeline.All() != "OUTPUT HERE\n" {
+		t.Errorf("incorrect string: %s", pipeline.All())
 	}
 }
 
