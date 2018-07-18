@@ -26,6 +26,8 @@ func (v *Vox) PrintJSON(contentBytes []byte) {
 		println(err.Error())
 	}
 
+	v.outputPlain(content)
+
 	re := regexp.MustCompile(`([\[\]\{\}]{1})`)
 	content = re.ReplaceAllString(content, Sprintc(Green, "$1"))
 
@@ -42,5 +44,5 @@ func (v *Vox) PrintJSON(contentBytes []byte) {
 	re = regexp.MustCompile(`(\:\s*null\s*[,\n])`)
 	content = re.ReplaceAllString(content, Sprintc(Red, "$1"))
 
-	v.Output(content)
+	v.output(content)
 }

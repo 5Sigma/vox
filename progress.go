@@ -2,6 +2,7 @@ package vox
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -28,8 +29,7 @@ func (v *Vox) StartProgress(current, max int) {
 		Current:   current,
 		StartTime: time.Now(),
 	}
-	v.progress.Writer.Out = v.out
-	v.progress.Writer.RefreshInterval = 2
+	v.progress.Writer.Out = os.Stdout
 	v.progress.Writer.Start()
 }
 

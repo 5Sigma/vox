@@ -7,17 +7,19 @@ import (
 )
 
 func TestPrompt(t *testing.T) {
+	ClearInput()
 	SendInput("OK\n")
 	result := Prompt("message", "default")
-	AssertOutput(t,
-		fmt.Sprintf(
-			"%s%s [%s]: %s",
-			Yellow,
-			"message",
-			"default",
-			ResetColor,
-		),
+	expected := fmt.Sprintf(
+		"%s%s [%s]: %s",
+		Yellow,
+		"message",
+		"default",
+		ResetColor,
 	)
+	if pipeline.Last() != expected {
+		t.Errorf("response not correct: %s", pipeline.Last())
+	}
 
 	if result != "OK" {
 		t.Errorf("Prompt response not valid: '%s'", result)
@@ -25,40 +27,50 @@ func TestPrompt(t *testing.T) {
 }
 
 func TestPromptBool(t *testing.T) {
-	ClearInput()
-	SendInput("Y\n")
-	result := PromptBool("message", false)
-	AssertOutput(t,
-		fmt.Sprintf(
+	t.Run("yes response", func(t *testing.T) {
+		ClearInput()
+		SendInput("Y\n")
+		result := PromptBool("message", false)
+		expected := fmt.Sprintf(
 			"%s%s [%s]: %s",
 			Yellow,
 			"message",
 			"N",
 			ResetColor,
-		),
-	)
+		)
 
-	if result != true {
-		t.Errorf("Prompt response not valid: '%s'", strconv.FormatBool(result))
-	}
+		if pipeline.Last() != expected {
+			t.Errorf("response not correct: %s", pipeline.Last())
+		}
 
-	ClearInput()
-	SendInput("NO\n")
-	result = PromptBool("message", false)
-	ClearOutput()
+		if result != true {
+			t.Errorf("Prompt response not valid: '%s'", strconv.FormatBool(result))
+		}
+	})
 
-	if result != false {
-		t.Errorf("Prompt response not valid: '%s'", strconv.FormatBool(result))
-	}
+	t.Run("no response", func(t *testing.T) {
+		ClearInput()
+		SendInput("NO\n")
+		result := PromptBool("message", false)
+		pipeline.Clear()
 
-	ClearInput()
-	SendInput("\n")
-	result = PromptBool("message", false)
-	ClearOutput()
+		if result != false {
+			t.Errorf("Prompt response not valid: '%s'", strconv.FormatBool(result))
+		}
 
-	if result != false {
-		t.Errorf("Prompt response not valid: '%s'", strconv.FormatBool(result))
-	}
+	})
+
+	t.Run("default response", func(t *testing.T) {
+		ClearInput()
+		SendInput("\n")
+		result := PromptBool("message", false)
+		pipeline.Clear()
+
+		if result != false {
+			t.Errorf("Prompt response not valid: '%s'", strconv.FormatBool(result))
+		}
+	})
+
 }
 
 func TestPromptChoice(t *testing.T) {
@@ -86,6 +98,6 @@ func TestPromptChoice(t *testing.T) {
 	if result != "First" {
 		t.Errorf("Prompt response not valid: '%s'", result)
 	}
-	ClearOutput()
+	pipeline.Clear()
 	ClearInput()
 }
